@@ -17,7 +17,7 @@ use redis::{Commands, RedisError, Client};
 use mongodb::bson::doc;
 
 // util to verify identity before to access to a private resource
-pub async fn auth_middleware<B>(
+pub async fn identity_middleware<B>(
     redis_connection: State<Client>,
     request: Request<B>,
     next: Next<B>,

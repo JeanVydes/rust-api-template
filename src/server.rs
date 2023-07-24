@@ -1,5 +1,5 @@
-use crate::{auth::{request_credentials, get_session, auth_middleware}, primitives::User, users::create_account, helpers::fallback};
-use axum::{routing::{post, get}, Router, http::Method, middleware};
+use crate::{identity::{request_credentials, get_session, identity_middleware}, primitives::User, users::create_account, helpers::fallback};
+use axum::{routing::{get, post}, Router, http::Method, middleware};
 use mongodb::{Client as MongoClient, Collection, Database};
 use redis::Client as RedisClient;
 use std::{env, sync::Arc};
@@ -41,18 +41,18 @@ pub async fn init(mongodb_client: MongoClient, redis_client: RedisClient) {
                 move |payload| create_account(payload, app_state)
             }),
         )
-        .route_layer(middleware::from_fn_with_state(app_state.redis_connection.clone(), auth_middleware));
+        .route_layer(middleware::from_fn_with_state(app_state.redis_connection.clone(), identity_middleware));
 
-    let auth = Router::new()
+    let identity = Router::new()
         .route(
-            "/request/credentials",
+            "/session",
             post({
                 let app_state = Arc::clone(&app_state);
                 move |payload| request_credentials(payload, app_state)
             }),
         )
         .route(
-            "/get/session",
+            "/session",
             get({
                 let app_state = Arc::clone(&app_state);
                 move |payload| get_session(payload, app_state)
@@ -61,7 +61,7 @@ pub async fn init(mongodb_client: MongoClient, redis_client: RedisClient) {
 
     let api = Router::new()
         .nest("/users", users)
-        .nest("/auth", auth);
+        .nest("/identity", identity);
         
     let cors = CorsLayer::new()
         .allow_credentials(false)

@@ -1,7 +1,7 @@
 mod primitives;
 mod requests_interfaces;
 mod server;
-mod auth;
+mod identity;
 mod token;
 mod mongo;
 mod redis;
