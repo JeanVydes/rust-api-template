@@ -8,6 +8,7 @@ use mongodb::{bson::doc, Collection};
 use regex::Regex;
 use serde_json::json;
 use std::sync::Arc;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use bcrypt::{hash, DEFAULT_COST};
 
@@ -162,7 +163,7 @@ pub async fn create_account(
         }
     };
 
-
+    let created_at = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
     let user = User {
         id: state.last_user_id + 1,
         username: payload.username.to_lowercase(),
@@ -176,6 +177,7 @@ pub async fn create_account(
             language: String::from("en"),
             notifications: true,
         },
+        created_at,
     };
 
     match collection.insert_one(user.clone(), None).await {

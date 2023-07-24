@@ -14,8 +14,8 @@ use std::env;
 async fn main() {
     dotenv::dotenv().ok();
     env::var("HOST").expect("ADDRESS must be set");
-    env::var("PORT").expect("PORT must be set");
-    match env::var("PORT").unwrap().parse::<u16>() {
+    let port = env::var("PORT").expect("PORT must be set");
+    match port.parse::<u16>() {
         Ok(_) => (),
         Err(_) => panic!("PORT must be a number"),
     };

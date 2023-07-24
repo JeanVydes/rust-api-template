@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{str::FromStr, time::Duration};
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -66,6 +66,8 @@ pub struct User {
     pub currency: Currencies,
     pub gender: Genders,
     pub preferences: Preferences,
+
+    pub created_at: Duration,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
